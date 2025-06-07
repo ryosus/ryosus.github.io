@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            background: #1a1a1a;
             color: #ffffff;
             line-height: 1.6;
             min-height: 100vh;
@@ -21,12 +21,34 @@
             flex-direction: column;
             align-items: center;
             padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cascade-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: transform 0.3s ease-out;
         }
 
         .container {
             max-width: 680px;
             width: 100%;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .profile {
@@ -40,11 +62,13 @@
             border-radius: 50%;
             margin-bottom: 1rem;
             border: 3px solid #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         .profile h1 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         .profile p {
@@ -68,16 +92,20 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .link-card:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .link-card img {
             width: 24px;
             height: 24px;
+            object-fit: contain;
         }
 
         .about-section {
@@ -85,11 +113,14 @@
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .about-section h2 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         .about-section p {
@@ -98,6 +129,7 @@
     </style>
 </head>
 <body>
+    <div class="cascade-bg"></div>
     <div class="container">
         <div class="profile">
             <img src="https://via.placeholder.com/96" alt="Profile Picture">
@@ -111,19 +143,77 @@
         </div>
 
         <div class="links">
-            <a href="https://t.me/your_telegram" class="link-card" target="_blank">
+            <a href="https://t.me/nailongcha" class="link-card" target="_blank">
                 <img src="https://telegram.org/img/t_logo.svg" alt="Telegram">
                 <span>Connect on Telegram</span>
             </a>
-            <a href="https://www.carousell.sg/your_profile" class="link-card" target="_blank">
-                <img src="https://assets.carousell.com/static/carousell-logo.svg" alt="Carousell">
+            <a href="https://www.carousell.sg/nvyrne" class="link-card" target="_blank">
+                <img src="carousell.png" alt="Carousell">
                 <span>Check out my Carousell</span>
             </a>
-            <a href="https://discord.com/users/your_discord_id" class="link-card" target="_blank">
-                <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_white_RGB.png" alt="Discord">
+            <a href="https://discord.com/users/779377954547433473" class="link-card" target="_blank">
+                <img src="discord.png" alt="Discord">
                 <span>Add me on Discord</span>
             </a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cascadeBg = document.querySelector('.cascade-bg');
+            const particles = [];
+            const numParticles = 20;
+
+            // Create particles
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 200 + 100 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                cascadeBg.appendChild(particle);
+                particles.push({
+                    element: particle,
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    speedX: (Math.random() - 0.5) * 2,
+                    speedY: (Math.random() - 0.5) * 2
+                });
+            }
+
+            // Update particle positions
+            function updateParticles(e) {
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+
+                particles.forEach(particle => {
+                    const dx = mouseX - particle.x;
+                    const dy = mouseY - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const maxDistance = 300;
+
+                    if (distance < maxDistance) {
+                        const force = (maxDistance - distance) / maxDistance;
+                        particle.x += dx * force * 0.1;
+                        particle.y += dy * force * 0.1;
+                    } else {
+                        particle.x += particle.speedX;
+                        particle.y += particle.speedY;
+
+                        // Bounce off edges
+                        if (particle.x < 0 || particle.x > window.innerWidth) particle.speedX *= -1;
+                        if (particle.y < 0 || particle.y > window.innerHeight) particle.speedY *= -1;
+                    }
+
+                    particle.element.style.transform = `translate(${particle.x}px, ${particle.y}px)`;
+                });
+
+                requestAnimationFrame(() => updateParticles(e));
+            }
+
+            // Add mouse move event listener
+            document.addEventListener('mousemove', updateParticles);
+        });
+    </script>
 </body>
 </html> 

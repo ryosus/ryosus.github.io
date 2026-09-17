@@ -133,17 +133,16 @@ a:hover { text-decoration: underline; }
 
 .identity-link:hover { text-decoration: none; }
 
+/* GitHub profile picture. The gradient behind it shows through if the image ever fails to load. */
 .avatar {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 40px;
   height: 40px;
   flex: none;
-  border-radius: 12px;
+  object-fit: cover;
+  border-radius: 50%;
   background: linear-gradient(140deg, #2d6ae3, #7b4ae2);
-  color: #fff;
-  font: 700 20px/1 var(--font-mono);
-  text-transform: lowercase;
+  box-shadow: 0 0 0 1px var(--border-strong);
 }
 
 .identity-text { display: flex; flex-direction: column; }
